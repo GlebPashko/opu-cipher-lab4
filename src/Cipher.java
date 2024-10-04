@@ -1,20 +1,20 @@
 public class Cipher {
-    public static void main(String[] args) {
-        String inputText = "Пашко";
-        String key = "ключ";
+//    public static void main(String[] args) {
+//        String inputText = "Пашко";
+//        String key = "ключ";
+//
+//        String encryptedText = encrypt(inputText, key);
+//        System.out.println("Encrypted text: " + encryptedText);
+//
+//        String decryptedText = decrypt(encryptedText, key);
+//        System.out.println("Decrypted text: " + decryptedText);
+//    }
 
-        String encryptedText = encrypt(inputText, key);
-        System.out.println("Encrypted text: " + encryptedText);
-
-        String decryptedText = decrypt(encryptedText, key);
-        System.out.println("Decrypted text: " + decryptedText);
-    }
-
-    public static String encrypt(String text, String key) {
+    public String encrypt(String text, String key) {
         String[] textArray = new String[2];
 
         if (text.length() % 2 != 0) {
-            text += " "; // Додаємо пробіл, якщо текст має непарну кількість символів
+            text += " ";
         }
 
         textArray[0] = text.substring(0, text.length() / 2);
@@ -31,34 +31,16 @@ public class Cipher {
             }
         }
 
-        return textArray[0] + textArray[1];  // Збираємо текст назад
+        return textArray[0] + textArray[1];
     }
 
-    private static String getKeyOfRound(String key, String text) {
-        // Перетворюємо ключ і частину тексту в двійковий формат
-        String iKey = textToBinary(key);
-        String iText = textToBinary(text);
-
-        // Накладаємо побітовий XOR
-        return xorBinary(iText, iKey);
-    }
-
-    private static String doRoundOfEncrypt(String text, String iKey) {
-        String iText = textToBinary(text);
-
-        // Шифруємо за допомогою XOR
-        return binaryToText(xorBinary(iText, iKey));
-    }
-
-    public static String decrypt(String encryptedText, String key) {
-        // Розбиваємо зашифрований текст на дві частини
+    public String decrypt(String encryptedText, String key) {
         String[] textArray = new String[2];
         int mid = encryptedText.length() / 2;
 
         textArray[0] = encryptedText.substring(0, mid);
         textArray[1] = encryptedText.substring(mid);
 
-        // 16 раундів дешифрування у зворотному порядку
         for (int i = 15; i >= 0; i--) {
             if (i % 2 == 0) {
                 String iKey = getKeyOfRound(key, textArray[1]);
@@ -69,10 +51,23 @@ public class Cipher {
             }
         }
 
-        return textArray[0].trim() + textArray[1].trim();  // Обрізаємо зайві символи
+        return textArray[0].trim() + textArray[1].trim();
     }
 
-    public static String textToBinary(String text) {
+    private String getKeyOfRound(String key, String text) {
+        String iKey = textToBinary(key);
+        String iText = textToBinary(text);
+
+        return xorBinary(iText, iKey);
+    }
+
+    private String doRoundOfEncrypt(String text, String iKey) {
+        String iText = textToBinary(text);
+
+        return binaryToText(xorBinary(iText, iKey));
+    }
+
+    public String textToBinary(String text) {
         StringBuilder binaryString = new StringBuilder();
 
         // Перетворюємо кожен символ у 32-бітний двійковий формат
@@ -84,7 +79,7 @@ public class Cipher {
         return binaryString.toString();
     }
 
-    public static String binaryToText(String binary) {
+    public String binaryToText(String binary) {
         StringBuilder text = new StringBuilder();
 
         // Перетворюємо кожні 32 біти у символ
@@ -97,7 +92,7 @@ public class Cipher {
         return text.toString();
     }
 
-    public static String xorBinary(String binaryText, String binaryKey) {
+    public String xorBinary(String binaryText, String binaryKey) {
         StringBuilder result = new StringBuilder();
 
         // Накладаємо XOR побітово для кожного 32-бітного блоку
